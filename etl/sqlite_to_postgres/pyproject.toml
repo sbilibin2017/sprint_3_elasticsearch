@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "sprint 1. sqlite_to_postgres"
+version = "0.1.0"
+description = "sprint 1 yandex practicum middle python"
+authors = ["Sergey Bilibin <s_bilibin2017@yandex.ru.ru>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+psycopg2-binary = "==2.9.5"
+python-dotenv="==0.21.1"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.mypy]
+warn_unused_configs = true
+disallow_incomplete_defs = true

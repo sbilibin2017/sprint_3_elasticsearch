@@ -1,0 +1,58 @@
+version: "3.8"
+
+services:
+  db:
+    image: postgres:15
+    volumes:
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - postgres_data:/var/lib/postgresql/data
+    expose:
+      - 5432
+    env_file:
+      - ./db/.env.dev
+
+  redis:
+    image: redis:7.0.8
+    restart: always
+    expose:
+      - 6379    
+    volumes: 
+      - redis:/data
+
+  sqlite_to_postgres:
+    build:
+      context: ./sqlite_to_postgres
+      dockerfile: Dockerfile.dev    
+    env_file:
+      - ./sqlite_to_postgres/.env.dev
+    depends_on:
+      - db
+      - redis
+
+  es01:
+    image: elasticsearch:7.7.0  
+    environment:
+      - discovery.type=single-node
+    volumes:
+      - es_data:/usr/share/elasticsearch-one/data    
+    ports:
+      - 9200:9200    
+    depends_on:
+      - sqlite_to_postgres
+  
+  postgres_to_es:
+    build: 
+      context: ./postgres_to_es
+      dockerfile: Dockerfile.dev 
+    volumes:
+      - ./postgres_to_es:/postgres_to_es
+    depends_on:
+      - es01 
+    env_file:
+      - ./postgres_to_es/.env.dev
+
+volumes:
+  postgres_data:
+  es_data:
+  redis:
+  
